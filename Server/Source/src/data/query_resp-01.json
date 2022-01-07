@@ -1,0 +1,189 @@
+{
+    "took": 711,
+    "timed_out": false,
+    "_shards": {
+        "total": 5,
+        "successful": 5,
+        "skipped": 0,
+        "failed": 0
+    },
+    "hits": {
+        "total": {
+            "value": 10000,
+            "relation": "gte"
+        },
+        "max_score": 0.8455335,
+        "hits": [
+            {
+                "_index": "es_published_files",
+                "_type": "_doc",
+                "_id": "7997",
+                "_score": 0.8455335,
+                "_source": {
+                    "context": {
+                        "vocab": "https://lexmachina.com/vocab/court/collections/"
+                    },
+                    "court-id": "ny",
+                    "crawl-type": "NY_Civil_Downstate",
+                    "collected-at": "2020-12-11T20:18:17.4008039",
+                    "original-filename": "D201120.ZIP",
+                    "id-link": "s3://lng-ddc1-osd-repository/courtlink/Feed_data-NY_Civil_Downstate-D201120-9b181c37-aa6d-478a-9d84-0a106ca8f382.zip",
+                    "id": 7997
+                }
+            },
+            {
+                "_index": "es_published_files",
+                "_type": "_doc",
+                "_id": "8000",
+                "_score": 0.8455335,
+                "_source": {
+                    "context": {
+                        "vocab": "https://lexmachina.com/vocab/court/collections/"
+                    },
+                    "court-id": "ny",
+                    "crawl-type": "NY_Civil_Downstate",
+                    "collected-at": "2020-12-11T20:18:18.0408185",
+                    "original-filename": "D201125.ZIP",
+                    "id-link": "s3://lng-ddc1-osd-repository/courtlink/Feed_data-NY_Civil_Downstate-D201125-6f3505b9-e47f-4f32-98a4-99853cd7d2a5.zip",
+                    "id": 8000
+                }
+            },
+            {
+                "_index": "es_published_files",
+                "_type": "_doc",
+                "_id": "8008",
+                "_score": 0.8455335,
+                "_source": {
+                    "context": {
+                        "vocab": "https://lexmachina.com/vocab/court/collections/"
+                    },
+                    "court-id": "ny",
+                    "crawl-type": "NY_Civil_Upstate",
+                    "collected-at": "2020-12-11T20:21:46.9775670",
+                    "original-filename": "RUC_20201102.zip",
+                    "id-link": "s3://lng-ddc1-osd-repository/courtlink/Feed_data-NY_Civil_Upstate-RUC_20201102-21b3e5da-73db-4a85-897a-a4415971ca8f.zip",
+                    "id": 8008
+                }
+            },
+            {
+                "_index": "es_published_files",
+                "_type": "_doc",
+                "_id": "8009",
+                "_score": 0.8455335,
+                "_source": {
+                    "context": {
+                        "vocab": "https://lexmachina.com/vocab/court/collections/"
+                    },
+                    "court-id": "ny",
+                    "crawl-type": "NY_Civil_Upstate",
+                    "collected-at": "2020-12-11T20:21:49.0696146",
+                    "original-filename": "RUC_20201103.zip",
+                    "id-link": "s3://lng-ddc1-osd-repository/courtlink/Feed_data-NY_Civil_Upstate-RUC_20201103-538114b2-227f-460c-9151-43f6f8cac493.zip",
+                    "id": 8009
+                }
+            },
+            {
+                "_index": "es_published_files",
+                "_type": "_doc",
+                "_id": "8010",
+                "_score": 0.8455335,
+                "_source": {
+                    "context": {
+                        "vocab": "https://lexmachina.com/vocab/court/collections/"
+                    },
+                    "court-id": "ny",
+                    "crawl-type": "NY_Civil_Upstate",
+                    "collected-at": "2020-12-11T20:21:50.8936561",
+                    "original-filename": "RUC_20201104.zip",
+                    "id-link": "s3://lng-ddc1-osd-repository/courtlink/Feed_data-NY_Civil_Upstate-RUC_20201104-a621d220-c3af-4198-9177-faf441a9f044.zip",
+                    "id": 8010
+                }
+            },
+            {
+                "_index": "es_published_files",
+                "_type": "_doc",
+                "_id": "8014",
+                "_score": 0.8455335,
+                "_source": {
+                    "context": {
+                        "vocab": "https://lexmachina.com/vocab/court/collections/"
+                    },
+                    "court-id": "ny",
+                    "crawl-type": "NY_Civil_Upstate",
+                    "collected-at": "2020-12-11T20:21:58.9178384",
+                    "original-filename": "RUC_20201110.zip",
+                    "id-link": "s3://lng-ddc1-osd-repository/courtlink/Feed_data-NY_Civil_Upstate-RUC_20201110-1177dd3e-e92a-40cb-8b3f-bab56d8d685d.zip",
+                    "id": 8014
+                }
+            },
+            {
+                "_index": "es_published_files",
+                "_type": "_doc",
+                "_id": "8016",
+                "_score": 0.8455335,
+                "_source": {
+                    "context": {
+                        "vocab": "https://lexmachina.com/vocab/court/collections/"
+                    },
+                    "court-id": "ny",
+                    "crawl-type": "NY_Civil_Upstate",
+                    "collected-at": "2020-12-11T20:22:02.5939220",
+                    "original-filename": "RUC_20201112.zip",
+                    "id-link": "s3://lng-ddc1-osd-repository/courtlink/Feed_data-NY_Civil_Upstate-RUC_20201112-321ea6fc-e971-4beb-9940-aba7f7937fcf.zip",
+                    "id": 8016
+                }
+            },
+            {
+                "_index": "es_published_files",
+                "_type": "_doc",
+                "_id": "8018",
+                "_score": 0.8455335,
+                "_source": {
+                    "context": {
+                        "vocab": "https://lexmachina.com/vocab/court/collections/"
+                    },
+                    "court-id": "ny",
+                    "crawl-type": "NY_Civil_Upstate",
+                    "collected-at": "2020-12-11T20:22:06.1300024",
+                    "original-filename": "RUC_20201116.zip",
+                    "id-link": "s3://lng-ddc1-osd-repository/courtlink/Feed_data-NY_Civil_Upstate-RUC_20201116-61b22714-ec8f-4cb9-8487-aa16ab7911ec.zip",
+                    "id": 8018
+                }
+            },
+            {
+                "_index": "es_published_files",
+                "_type": "_doc",
+                "_id": "8023",
+                "_score": 0.8455335,
+                "_source": {
+                    "context": {
+                        "vocab": "https://lexmachina.com/vocab/court/collections/"
+                    },
+                    "court-id": "ny",
+                    "crawl-type": "NY_Civil_Upstate",
+                    "collected-at": "2020-12-11T20:22:15.2782104",
+                    "original-filename": "RUC_20201123.zip",
+                    "id-link": "s3://lng-ddc1-osd-repository/courtlink/Feed_data-NY_Civil_Upstate-RUC_20201123-9b51fc90-6080-4f10-9d8e-92fcd89897f2.zip",
+                    "id": 8023
+                }
+            },
+            {
+                "_index": "es_published_files",
+                "_type": "_doc",
+                "_id": "8024",
+                "_score": 0.8455335,
+                "_source": {
+                    "context": {
+                        "vocab": "https://lexmachina.com/vocab/court/collections/"
+                    },
+                    "court-id": "ny",
+                    "crawl-type": "NY_Civil_Upstate",
+                    "collected-at": "2020-12-11T20:22:16.8902470",
+                    "original-filename": "RUC_20201124.zip",
+                    "id-link": "s3://lng-ddc1-osd-repository/courtlink/Feed_data-NY_Civil_Upstate-RUC_20201124-caad14e5-12fa-4441-a519-c92e1d7faaf7.zip",
+                    "id": 8024
+                }
+            }
+        ]
+    }
+}

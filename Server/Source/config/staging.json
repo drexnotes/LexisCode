@@ -1,0 +1,22 @@
+{
+  "staging": {
+    "name": "OSD Api - Staging Mode",
+    "port": 3100,
+    "mode": "staging",
+    "protocol": "http",
+    "serverUrl": "localhost",
+    "serverUrlWebUrlLink": "localhost:3100/",
+    "elasticsearch": {
+      "access_key": "",
+      "secret": "",
+      "secret_token": "",
+      "index": "es_published_files"
+    },
+    "email": {
+      "host": "",
+      "port": "",
+      "username": "",
+      "password": ""
+    }
+  }
+}

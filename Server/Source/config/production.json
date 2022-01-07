@@ -1,0 +1,22 @@
+{
+  "production": {
+    "name": "OSD API - Production Mode",
+    "port": 3100,
+    "mode": "production",
+    "protocol": "http",
+    "serverUrl": "localhost",
+    "serverUrlWebUrlLink": "localhost:3100/",
+    "elasticsearch": {
+      "access_key": "",
+      "secret": "",
+      "secret_token": "",
+      "index": "es_published_files"
+    },
+    "email": {
+      "host": "",
+      "port": "",
+      "username": "",
+      "password": ""
+    }
+  }
+}

@@ -1,0 +1,137 @@
+@Library('DevOpsShared@v1') _
+
+pipeline {
+    agent any
+    parameters {
+        string(name: 'releaseUnitBuild',     description: '[Required] The build number of the release unit to deploy')
+        choice(name: "targetAccount", choices: "PRODUCT_CONTENT_DEV\nPRODUCT_CONTENT_CERT\nPRODUCT_CONTENT_PROD", description: "The AWS account number to deploy to:\n- PRODUCT_CONTENT_DEV (284211348336)\n- PRODUCT_CONTENT_CERT (217306840436)\n- PRODUCT_CONTENT_PROD (533833414464)")
+        choice(name: "assetGroup", choices: "ddc1\ncdc1\npdc1", description: "The asset group.")
+        booleanParam(name: 'autoDeploy', defaultValue: false, description: 'Automatic deploy by build job')
+    }
+    environment {
+        def ASSET_ID = "2736"
+        def ASSET_NAME = "OSDRepository"
+        def ASSET_AREA_NAME = "OSDSearchAppFrontend"
+        def PROJECT_PATH = "OSDSearchApp/Frontend"
+        def ASSET_GROUP = "${params.assetGroup ?: commons.getBranchName()}"
+        def RELEASE_UNIT = [commons.getBranchName(), params.releaseUnitBuild].join('/')
+        def TARGET_ACCOUNT = "${params.targetAccount}"
+        def ACCOUNT_ID = ""
+        def S3_BUCKET = "lng-${params.assetGroup}-osdrepository-osdsearch"
+        def ARTIFACT_PATH = "${WORKSPACE}/artifacts/${ASSET_ID}/${ASSET_NAME}/${ASSET_AREA_NAME}/${RELEASE_UNIT}"
+    }
+    stages { 
+        stage('Stage Release Unit') {
+            steps{
+                stageReleaseUnit()
+            }
+        }
+        stage('Get Target Account ID') {
+            steps{
+                script {
+                    // Map account alias to number
+                    if (TARGET_ACCOUNT == "PRODUCT_CONTENT_DEV") {
+                        ACCOUNT_ID = env.PRODUCT_CONTENT_DEV
+                    } else if (TARGET_ACCOUNT == "PRODUCT_CONTENT_CERT") {
+                        ACCOUNT_ID = env.PRODUCT_CONTENT_CERT
+                    } else if (TARGET_ACCOUNT == "PRODUCT_CONTENT_PROD") {
+                        ACCOUNT_ID = env.PRODUCT_CONTENT_PROD
+                    }
+                }
+            }
+        }
+        stage('Create Change Set') {
+            steps{
+                cloudformation(
+                    command: 'createChangeSet',
+                    account: ACCOUNT_ID, 
+                    templateName: 'WebApp',
+                    stackParameters: [  
+                        'AssetGroup': params.assetGroup,
+                        'AssetName': ASSET_NAME,
+                        'AssetID': ASSET_ID,
+                    ]
+                )
+            }
+        }
+        stage('Review Change Set') {
+            when {
+                expression {
+                    return ACCOUNT_ID != PRODUCT_CONTENT_DEV && params.autoDeploy != true
+                }
+            }
+            steps{
+                timeout(30) {
+                    emailext mimeType: 'text/html',
+                            subject: "Deploy Approval - ${JOB_NAME}",
+                            to: "simon.tan@lexisnexis.com",
+                            body: '''Build: <a href="${BUILD_URL}">${BUILD_TAG}</a><br/>
+                                <a href="${BUILD_URL}input">Approval Page</a>'''
+                    // notification
+                    script {
+                        input message: 'Do you want to excecute the change set?', submitter: 'CCS-Approvers,taitaj'
+                    }
+                }
+            }
+        }
+        stage('Execute Change Set') {
+            steps{
+                cloudformation(
+                    command: 'executeChangeSet',
+                    account: ACCOUNT_ID,
+                    templateName: 'WebApp'
+                )
+            }
+        }
+        stage('Copy to S3') {
+            steps{
+                dir("${ARTIFACT_PATH}"){
+                    sh "unzip Frontend.zip"
+                }
+                s3(
+                    command: 'cp',
+                    account: ACCOUNT_ID,
+                    destination: "s3://${S3_BUCKET}",
+                    region: 'us-east-1',
+                    recursive: 'true',
+                    source: "${ARTIFACT_PATH}/OSDSearchApp/Frontend/Source/dist"
+                )
+            }
+        }
+        stage('Create Cloudfront Invalidation') {
+            steps{
+                script {
+                    stack_name = cloudformation.generateStackName('WebApp')
+                    physicalResourceId = boto3(
+                            account: ACCOUNT_ID,
+                            arguments: ["StackName"        : stack_name,
+                                        "LogicalResourceId": "CloudFrontDistribution"],
+                            client: 'cloudformation',
+                            method: 'describe_stack_resource',
+                            query: "StackResourceDetail.PhysicalResourceId",
+                            region: "us-east-1"
+                    )
+                    response = boto3(
+                        account: ACCOUNT_ID,
+                        client: "cloudfront",
+                        method: "create_invalidation",
+                        region: "us-east-1",
+                        query: "Invalidation.Id",
+                        arguments: [
+                            "DistributionId": physicalResourceId,
+                            "InvalidationBatch": [
+                                "Paths": [ 
+                                    'Quantity': 1,
+                                    'Items': [
+                                        "/index.html"
+                                    ]
+                                ],
+                                "CallerReference": RELEASE_UNIT
+                            ]
+                        ]
+                    )     
+                }
+            }
+        }
+    }
+}

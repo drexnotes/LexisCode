@@ -1,0 +1,21 @@
+@Library('DevOpsShared@v1') _
+
+String cron_string = BRANCH_NAME == "master" ? "H H 1 * *" : ""
+
+pipeline {
+    agent any
+    triggers {cron(cron_string)}
+    environment {
+        def ASSET_ID = "2736"
+        def ASSET_NAME = "OSDRepository"
+        def ASSET_AREA_NAME = "OSDSearchAppFrontend"
+        def PROJECT_PATH = "OSDSearchApp/Frontend"
+    }
+    stages {
+        stage('Check Quality') {
+            steps{
+                checkQuality()
+            }
+        }
+    }
+}

@@ -1,0 +1,69 @@
+@Library('DevOpsShared@v1') _
+
+pipeline {
+    agent {
+        node {
+            label 'large'
+        }
+    }
+    environment {
+        def ASSET_ID = "2736"
+        def ASSET_NAME = "OSDRepository"
+        def ASSET_AREA_NAME = "OSDSearchAppFrontend"
+        def PROJECT_PATH = "OSDSearchApp/Frontend"
+    }
+    tools{
+        nodejs 'Node 14.x'
+    } 
+    stages {
+        stage('Check Quality') {
+           steps{
+               checkQuality()
+           }
+        }
+        stage('Build') {
+            steps{
+                buildReleaseUnit()
+            }
+        }
+        stage('Build WebApp Code') {
+            steps{
+                dir("./OSDSearchApp/Frontend/Source") {                
+                    sh "npm install --loglevel verbose"        
+                    sh "npm run build --loglevel verbose" 
+                }
+                sh 'zip -r ./OSDSearchApp/Frontend/artifacts/Frontend.zip ./OSDSearchApp/Frontend/Source'
+            }
+        }
+        stage('Publish') {
+            steps{
+                publishReleaseUnit()
+            }
+        }
+    }
+    post{
+        failure{
+            script{
+                log_file = sh(returnStdout: true, script: 'ls -1t /home/ec2-user/.npm/_logs | head -1')
+                sh "cat /home/ec2-user/.npm/_logs/${log_file}"
+            }
+        }
+        success{
+            script{
+                if (commons.getBranchName() == 'master'){
+                    build   job: JOB_NAME.replace('/Build/', '/Deploy/'),
+                            parameters: [   string(name: 'releaseUnitBuild', value: env.BUILD_NUMBER), 
+                                            string(name: 'targetAccount', value: "PRODUCT_CONTENT_DEV"),
+                                            string(name: 'assetGroup', value: 'ddc1'),
+                                            booleanParam(name: 'autoDeploy', value: true)
+                                        ],
+                            wait: false
+                }
+            }
+        }
+        always { 
+            cleanWs()
+        }
+    }
+}
+

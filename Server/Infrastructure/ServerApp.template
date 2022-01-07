@@ -1,0 +1,489 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "This template creates WebApps OsdSearch",
+    "Parameters": {
+        "AssetID": {
+            "Description": "LNG Asset ID",
+            "Type": "String",
+            "Default": "2736",
+            "AllowedValues": [
+                "2736"
+            ]
+        },
+        "AssetName": {
+            "Description": "LNG Asset Name",
+            "Type": "String",
+            "Default": "OSDRepository",
+            "AllowedValues": [
+                "OSDRepository"
+            ]
+        },
+        "AssetNameLower": {
+            "Description": "LNG Asset Name",
+            "Type": "String",
+            "Default": "osdrepository",
+            "AllowedValues": [
+                "osdrepository"
+            ]
+        },
+        "AssetGroup": {
+            "Description": "LNG Stage",
+            "Type": "String",
+            "Default": "ddc1",
+            "AllowedValues": [
+                "sb1",
+                "ddc1",
+                "cdc1",
+                "pdc1"
+            ]
+        },
+        "AssetAreaName": {
+            "Description": "LNG Environment",
+            "Type": "String",
+            "Default": "OsdSearch"
+        },
+        "Build": {
+            "Description": "Increment this number to update the CloudMeta outputs for this stack",
+            "Type": "Number",
+            "Default": "1"
+        },
+        "S3BucketSuffixName": {
+            "Description": "S3 Bucket Name",
+            "Type": "String",
+            "Default": "osdsearch"
+        },
+        "EnableVersioning": {
+            "Description": "Versioning",
+            "Type": "String",
+            "Default": "Enabled",
+            "AllowedValues": [
+                "Enabled",
+                "Suspended"
+            ]
+        },
+        "DnsName": {
+            "Description": "DNS Name",
+            "Type": "String",
+            "Default": "osd"
+        }
+    },
+    "Conditions"  : {
+        "IsProd" : {
+            "Fn::Equals": [
+                {"Ref": "AWS::AccountId"},
+                "533833414464"
+            ]
+        }
+    },
+    "Resources": {
+        "CloudMetadata": {
+            "Type": "Custom::CloudMetadata",
+            "Properties": {
+                "ServiceToken": {
+                    "Fn::Sub": "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:CustomResourceGateway"
+                },
+                "AssetID": {
+                    "Ref": "AssetID"
+                },
+                "AssetGroup": {
+                    "Ref": "AssetGroup"
+                },
+                "AssetAreaName": {
+                    "Ref": "AssetName"
+                },
+                "Version": "1",
+                "LastUpdate": {
+                    "Ref": "Build"
+                },
+                "Filter": [
+                ]
+            }
+        },
+        "CloudFrontOriginAccessIdentity": {
+            "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
+            "Properties": {
+                "CloudFrontOriginAccessIdentityConfig": {
+                    "Comment": {
+                        "Fn::Sub": "InternalWebApps"
+                    }
+                }
+            }
+        },
+        "S3Bucket": {
+            "DependsOn": "CloudFrontOriginAccessIdentity",
+            "Type": "AWS::S3::Bucket",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+                "BucketName": {
+                    "Fn::Sub": "lng-${AssetGroup}-${AssetNameLower}-${S3BucketSuffixName}"
+                },
+                "VersioningConfiguration": {
+                    "Status": {
+                        "Ref": "EnableVersioning"
+                    }
+                },
+                "WebsiteConfiguration": {
+                    "IndexDocument": "index.html"
+                },
+                "Tags": [
+                    {
+                        "Key": "AssetID",
+                        "Value": {
+                            "Ref": "AssetID"
+                        }
+                    },
+                    {
+                        "Key": "AssetName",
+                        "Value": {
+                            "Ref": "AssetName"
+                        }
+                    },
+                    {
+                        "Key": "AssetGroup",
+                        "Value": {
+                            "Ref": "AssetGroup"
+                        }
+                    },
+                    {
+                        "Key": "AssetAreaName",
+                        "Value": {
+                            "Ref": "AssetAreaName"
+                        }
+                    }
+                ]
+            }
+        },
+        "S3BucketPolicy": {
+            "DependsOn": "S3Bucket",
+            "Type": "AWS::S3::BucketPolicy",
+            "Properties": {
+                "Bucket": {
+                    "Ref": "S3Bucket"
+                },
+                "PolicyDocument": {
+                    "Statement": [
+                        {
+                            "Action": [
+                                "s3:GetObject"
+                            ],
+                            "Effect": "Allow",
+                            "Resource": {
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        "arn:aws:s3:::",
+                                        {
+                                            "Ref": "S3Bucket"
+                                        },
+                                        "/*"
+                                    ]
+                                ]
+                            },
+                            "Principal": {
+                                "AWS": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ",
+                                            {
+                                                "Ref": "CloudFrontOriginAccessIdentity"
+                                            }
+                                        ]
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "CloudFrontDistribution": {
+            "DependsOn": [
+                "S3Bucket"
+            ],
+            "Type": "AWS::CloudFront::Distribution",
+            "Properties": {
+                "DistributionConfig": {
+                    "Aliases": [
+                        {
+                            "Fn::If" : [
+                                "IsProd",
+                                {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            {
+                                                "Ref": "DnsName"
+                                            },
+                                            ".content.aws.lexis.com"
+                                        ]
+                                    ]
+                                },
+                                {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            {
+                                                "Ref": "AssetGroup"
+                                            },
+                                            "-",
+                                            {
+                                                "Ref": "DnsName"
+                                            },
+                                            ".content.aws.lexis.com"
+                                        ]
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "WebACLId": {
+                        "Ref": "OsdAppWAF"
+                    },
+                    "CustomErrorResponses": [
+                        {
+                            "ErrorCachingMinTTL": "0",
+                            "ErrorCode": "403",
+                            "ResponseCode": "403",
+                            "ResponsePagePath": "/index.html"
+                        }
+                    ],
+                    "DefaultCacheBehavior": {
+                        "AllowedMethods": [
+                            "HEAD",
+                            "GET"
+                        ],
+                        "CachedMethods": [
+                            "HEAD",
+                            "GET"
+                        ],
+                        "Compress": "true",
+                        "ForwardedValues": {
+                            "Cookies": {
+                                "Forward": "all"
+                            },
+                            "QueryString": "false"
+                        },
+                        "TargetOriginId": {
+                            "Ref": "S3Bucket"
+                        },
+                        "ViewerProtocolPolicy": "redirect-to-https"
+                    },
+                    "Enabled": "true",
+                    "HttpVersion": "http2",
+                    "IPV6Enabled": "true",
+                    "Origins": [
+                        {
+                            "DomainName": {
+                                "Fn::GetAtt": [
+                                    "S3Bucket",
+                                    "DomainName"
+                                ]
+                            },
+                            "Id": {
+                                "Ref": "S3Bucket"
+                            },
+                            "S3OriginConfig": {
+                                "OriginAccessIdentity": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "origin-access-identity/cloudfront/",
+                                            {
+                                                "Ref": "CloudFrontOriginAccessIdentity"
+                                            }
+                                        ]
+                                    ]
+                                }
+                            }
+                        }
+                    ],
+                    "PriceClass": "PriceClass_100",
+                    "ViewerCertificate": {
+                        "AcmCertificateArn": {
+                            "Fn::GetAtt": [
+                                "CloudMetadata",
+                                "network.sslArn.content.aws.lexis.com"
+                            ]
+                        },
+                        "SslSupportMethod": "sni-only"
+                    }
+                },
+                "Tags": [
+                    {
+                        "Key": "AssetID",
+                        "Value": {
+                            "Ref": "AssetID"
+                        }
+                    },
+                    {
+                        "Key": "AssetName",
+                        "Value": {
+                            "Ref": "AssetName"
+                        }
+                    },
+                    {
+                        "Key": "AssetGroup",
+                        "Value": {
+                            "Ref": "AssetGroup"
+                        }
+                    },
+                    {
+                        "Key": "AssetAreaName",
+                        "Value": {
+                            "Ref": "AssetAreaName"
+                        }
+                    }
+                ]
+            }
+        },
+        "DnsRecord": {
+            "DependsOn": [
+                "CloudMetadata",
+                "CloudFrontDistribution"
+            ],
+            "Type": "Custom::Route53ELBAliasRecord",
+            "Version": "1.0",
+            "Properties": {
+                "ServiceToken": {
+                    "Fn::Sub": "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:CustomResourceGateway"
+                },
+                "AliasTarget": {
+                    "Fn::GetAtt": [
+                        "CloudFrontDistribution",
+                        "DomainName"
+                    ]
+                },
+                "AliasRecord": {
+                    "Fn::If" : [
+                        "IsProd",
+                        {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    {
+                                        "Ref": "DnsName"
+                                    },
+                                    ".content.aws.lexis.com"
+                                ]
+                            ]
+                        },
+                        {
+                            "Fn::Join": [
+                                "",
+                                [
+                                    {
+                                        "Ref": "AssetGroup"
+                                    },
+                                    "-",
+                                    {
+                                        "Ref": "DnsName"
+                                    },
+                                    ".content.aws.lexis.com"
+                                ]
+                            ]
+                        }
+                    ]
+                },
+                "AliasComment": "Entry for an alias record for Osd Internal Api"
+            }
+        },
+        "RelxCidr": {
+            "Type": "AWS::WAF::IPSet",
+            "Properties": {
+                "IPSetDescriptors": [
+                    {
+                        "Type": "IPV4",
+                        "Value": "198.176.80.0/24"
+                    },
+                    {
+                        "Type": "IPV4",
+                        "Value": "198.176.81.0/24"
+                    },
+                    {
+                        "Type": "IPV4",
+                        "Value": "198.176.82.0/24"
+                    },
+                    {
+                        "Type": "IPV4",
+                        "Value": "198.176.83.0/24"
+                    },
+                    {
+                        "Type": "IPV4",
+                        "Value": "198.176.84.0/24"
+                    },
+                    {
+                        "Type": "IPV4",
+                        "Value": "198.176.85.0/24"
+                    },
+                    {
+                        "Type": "IPV4",
+                        "Value": "198.176.86.0/24"
+                    },
+                    {
+                        "Type": "IPV4",
+                        "Value": "198.176.87.0/24"
+                    },
+                    {
+                        "Type": "IPV4",
+                        "Value": "198.185.24.0/24"
+                    },
+                    {
+                        "Type": "IPV4",
+                        "Value": "198.185.18.0/24"
+                    },
+                    {
+                        "Type": "IPV4",
+                        "Value": "198.185.23.0/24"
+                    },
+                    {
+                        "Type": "IPV4",
+                        "Value": "13.86.36.71/32"
+                    },
+                    {
+                        "Type": "IPV4",
+                        "Value": "13.89.110.93/32"
+                    }
+                ],
+                "Name": "RelxCidrOsd"
+            }
+        },
+        "OsdAppWhiteListRule": {
+            "Type": "AWS::WAF::Rule",
+            "Properties": {
+                "Name": "Osd App Whitelist Rule",
+                "MetricName": "OsdAppWhitelistRule",
+                "Predicates": [
+                    {
+                        "DataId": {
+                            "Ref": "RelxCidr"
+                        },
+                        "Type": "IPMatch",
+                        "Negated": "false"
+                    }
+                ]
+            }
+        },
+        "OsdAppWAF": {
+            "Type": "AWS::WAF::WebACL",
+            "Properties": {
+                "Name": "OSD App WAF with restriction on IP range",
+                "DefaultAction": {
+                    "Type": "BLOCK"
+                },
+                "MetricName": "OsdOsdAppWhitelistRule",
+                "Rules": [
+                    {
+                        "Action": {
+                            "Type": "ALLOW"
+                        },
+                        "Priority": 1,
+                        "RuleId": {
+                            "Ref": "OsdAppWhiteListRule"
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}
