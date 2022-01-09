@@ -21,7 +21,7 @@ dotenv.config({ path: config.envpath });
 
 //middleware for aws session creation
 var requestSession = async function (req, res, next) {
-	req.session = await STSServices.createSessionToken({"DurationSeconds": config.sessionDuration})
+	req.session = await STSServices.createSessionToken({"DurationSeconds": config.elasticsearch.sessionDuration})
 	next()
   }
 app.use(requestSession)
