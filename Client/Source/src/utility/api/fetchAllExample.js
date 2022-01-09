@@ -27,17 +27,22 @@ var raw = JSON.stringify({
 });
 
 var requestOptions = {
-  method: "GET",
- // headers: myHeaders,
- // body: raw,
+  method: "POST",
+  // headers: myHeaders,
+  // body: raw,
   redirect: "follow",
 };
 
-const fetchAllExample = () => {
-  fetch("api/es/search", requestOptions)
-    .then((response) => response.text())
-    .then((result) => console.log(result))
-    .catch((error) => console.log("error", error));
+const fetchAllExample = () => async (dispatch) => {
+  fetch("http://localhost:3100/es/search", requestOptions)
+    .then((response) => response.json())
+    .then((result) => {
+      console.log(result);
+      dispatch({ type: "SEARCH", payload: result.data.hits.hits });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 };
 
 export default fetchAllExample;

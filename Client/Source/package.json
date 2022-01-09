@@ -13,13 +13,17 @@
     "@aws-sdk/node-http-handler": "^3.40.0",
     "@aws-sdk/protocol-http": "^3.40.0",
     "@aws-sdk/signature-v4": "^3.45.0",
+    "@material-ui/core": "^4.12.3",
     "browserfy": "^1.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-is": "^17.0.2",
+    "react-redux": "^7.2.6",
+    "redux-thunk": "^2.4.1",
     "require": "^0.4.4",
     "styled-components": "^5.3.3"
   },
-  "proxy":"localhost:3001",
+  "proxy": "localhost:3001",
   "devDependencies": {
     "@originjs/vite-plugin-commonjs": "^1.0.1",
     "@vitejs/plugin-react": "^1.0.7",
