@@ -11,16 +11,17 @@ const STSServices = require('./services/STSServices');
 
 
 // Set path to .env file
-dotenv.config({ path: './.env' });
+
 
 // if NODE_ENV value not define then dev value will be assign
 mode = process.env.NODE_ENV || "dev";
 // mode can be access anywhere in the project
 const config = require("config").get(mode);
+dotenv.config({ path: config.envpath });
 
-
+//middleware for aws session creation
 var requestSession = async function (req, res, next) {
-	req.session = await STSServices.createSessionToken({"DurationSeconds": 1200})
+	req.session = await STSServices.createSessionToken({"DurationSeconds": config.sessionDuration})
 	next()
   }
 app.use(requestSession)

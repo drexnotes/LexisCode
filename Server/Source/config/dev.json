@@ -3,6 +3,7 @@
     "name": "OSD API - Dev Mode",
     "port": 3100,
     "mode": "development",
+    "envpath": "./.env.dev",
     "protocol": "http",
     "serverUrl": "localhost",
     "serverUrlWebUrlLink": "localhost:3100/",
@@ -10,7 +11,8 @@
       "access_key": "",
       "secret": "",
       "secret_token": "",
-      "index": "es_published_files"
+      "index": "es_published_files",
+      "sessionDuration" : 1200
     },
     "email": {
       "host": "",

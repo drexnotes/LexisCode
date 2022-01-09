@@ -3,6 +3,7 @@
     "name": "OSD Api - Staging Mode",
     "port": 3100,
     "mode": "staging",
+    "envpath": "./.env.stg",
     "protocol": "http",
     "serverUrl": "localhost",
     "serverUrlWebUrlLink": "localhost:3100/",
