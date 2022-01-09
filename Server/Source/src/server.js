@@ -5,10 +5,25 @@ const cors = require("cors");
 const app = express();
 const pack = require("../package");
 const path = require("path");
+const dotenv = require('dotenv');
+const STSServices = require('./services/STSServices');
+
+
+
+// Set path to .env file
+dotenv.config({ path: './.env' });
+
 // if NODE_ENV value not define then dev value will be assign
 mode = process.env.NODE_ENV || "dev";
 // mode can be access anywhere in the project
 const config = require("config").get(mode);
+
+
+var requestSession = async function (req, res, next) {
+	req.session = await STSServices.createSessionToken({"DurationSeconds": 1200})
+	next()
+  }
+app.use(requestSession)
 
 app.use(cors());
 app.use(bodyParser.json());

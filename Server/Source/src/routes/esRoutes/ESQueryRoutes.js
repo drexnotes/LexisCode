@@ -6,7 +6,7 @@ const Validation = require('../../validation/ESQueryValidation');
 
 module.exports = (app) => {
   router.route('/search')
-    .get(
+    .post(
      // Validation.searchES(),
       ESQueryController.searchES
     );
