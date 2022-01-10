@@ -9,12 +9,12 @@
     "serverUrlWebUrlLink": "localhost:3100/",
     "elasticsearch": {
       "region": "us-east-2",
-      "access_key": "",
-      "secret": "",
+      "access_key": "AKIA45CVRDDTAHAX4HHY",
+      "secret": "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",
       "secret_token": "",
       "index": "es_published_files",
       "sessionDuration" : 1200,
-      "domain" : ""
+      "domain" : "search-hintonmovies-5-cpprbkfhzjubdlbmpqp4c2i4sa.us-east-2.es.amazonaws.com"
     },
     "email": {
       "host": "",

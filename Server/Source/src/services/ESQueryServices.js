@@ -3,10 +3,14 @@ const { defaultProvider } = require("@aws-sdk/credential-provider-node");
 const { SignatureV4 } = require("@aws-sdk/signature-v4");
 const { NodeHttpHandler } = require("@aws-sdk/node-http-handler");
 const { Sha256 } = require("@aws-crypto/sha256-browser")
+const dotenv = require('dotenv');
+mode = process.env.NODE_ENV || "dev";
+// mode can be access anywhere in the project
+const config = require("config").get(mode);
+dotenv.config({ path: config.envpath });
 
 module.exports = {
   searchES: async (body, params, query, session) => {
-    console.log("test", process.env.NODE_ENV);
     return new Promise(async (resolve, reject) => {
 
       const clientn = new NodeHttpHandler(session);
@@ -14,9 +18,9 @@ module.exports = {
         body: JSON.stringify(body),
         headers: {
             'Content-Type': 'application/json',
-            'host': process.env.AWS_DOMAIN,
+            'host': config.elasticsearch.domain,
         },
-        hostname: process.env.AWS_DOMAIN,
+        hostname: config.elasticsearch.domain,
         method: 'POST',
         path: '_search'
     
@@ -24,7 +28,7 @@ module.exports = {
       // Sign the request
       const  signer = new SignatureV4({
         credentials: defaultProvider(),
-        region: process.env.AWS_REGION,
+        region: config.elasticsearch.region,
         service: 'es',
         sha256: Sha256
       });

@@ -1,13 +1,18 @@
 const { STSClient, GetSessionTokenCommand } = require("@aws-sdk/client-sts"); // ES Modules 
+const dotenv = require('dotenv');
+mode = process.env.NODE_ENV || "dev";
+// mode can be access anywhere in the project
+const config = require("config").get(mode);
+dotenv.config({ path: config.envpath });
 module.exports = {
     createSessionToken: async (createSessionTokenDto) => {
       return new Promise(async (resolve, reject) => {
         try{
         let client = new STSClient({ 
-            region: process.env.AWS_REGION, 
+            region: config.elasticsearch.region, 
             credentials : {
-              accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-              secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+              accessKeyId: config.elasticsearch.access_key,
+              secretAccessKey: config.elasticsearch.secret,
             }
         });
      
@@ -16,7 +21,7 @@ module.exports = {
       
           const response = await client.send(command);
             const output = {
-            region: process.env.AWS_REGION,
+            region: config.elasticsearch.region,
             accessKeyId: response.Credentials.AccessKeyId,
             secretAccessKey: response.Credentials.SecretAccessKey,
             sessionToken: response.Credentials.SessionToken,
