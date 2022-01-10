@@ -7,6 +7,7 @@ dotenv.config({ path: config.envpath });
 module.exports = {
     createSessionToken: async (createSessionTokenDto) => {
       return new Promise(async (resolve, reject) => {
+        console.log(config);
         try{
         let client = new STSClient({ 
             region: config.elasticsearch.region, 
