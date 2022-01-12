@@ -22,7 +22,7 @@ module.exports = {
 		try {
 		
 			let session = req.session;
-			console.log("session",session)
+			//console.log("session",session)
 			let result = await ESQueryServices.searchES(body, params, query, session);
 			res.status(201).send(reqResponse.successResponse(201, "Search has results", result));
 		} catch (error) {

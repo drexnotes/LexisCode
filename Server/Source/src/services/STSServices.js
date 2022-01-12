@@ -10,21 +10,29 @@ module.exports = {
     return new Promise(async (resolve, reject) => {
       // console.log(config);
       try {
-        let client = new STSClient({
-          region: config.elasticsearch.region,
-          credentials: {
-            accessKeyId: config.elasticsearch.access_key,
-            secretAccessKey: config.elasticsearch.secret,
-          },
-        });
+        // let client = new STSClient({
+        //   region: config.elasticsearch.region,
+        //   credentials: {
+        //     accessKeyId: config.elasticsearch.access_key,
+        //     secretAccessKey: config.elasticsearch.secret,
+        //   },
+        // });
 
-        const command = await new GetSessionTokenCommand(createSessionTokenDto);
-        const response = await client.send(command);
+        // const command = await new GetSessionTokenCommand(createSessionTokenDto);
+        // const response = await client.send(command);
+        // const output = {
+        //   region: config.elasticsearch.region,
+        //   accessKeyId: response.Credentials.AccessKeyId,
+        //   secretAccessKey: response.Credentials.SecretAccessKey,
+        //   sessionToken: response.Credentials.SessionToken,
+        //   signatureVersion: "v4",
+        // };
+
         const output = {
-          region: config.elasticsearch.region,
-          accessKeyId: response.Credentials.AccessKeyId,
-          secretAccessKey: response.Credentials.SecretAccessKey,
-          sessionToken: response.Credentials.SessionToken,
+          region: config.elasticsearch_temp.region,
+          accessKeyId: config.elasticsearch_temp.access_key,
+          secretAccessKey: config.elasticsearch_temp.secret,
+          sessionToken: config.elasticsearch_temp.secret_token,
           signatureVersion: "v4",
         };
         //console.log("Token", response.Credentials.SecretAccessKey);

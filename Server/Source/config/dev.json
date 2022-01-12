@@ -16,6 +16,13 @@
       "sessionDuration" : 1200,
       "domain" : "search-hintonmovies-5-cpprbkfhzjubdlbmpqp4c2i4sa.us-east-2.es.amazonaws.com"
     },
+    "elasticsearch_temp": {
+      "region": "us-east-1",
+      "access_key": "ASIAUELCRANYPWSQTOZO",
+      "secret": "mGmVMvC4MIHSRPB3x5zSEaqfW8eDcSipLh1kvA5+",
+      "secret_token": "IQoJb3JpZ2luX2VjEDIaCXVzLWVhc3QtMSJHMEUCIQDlAcammrcv7HGNX6SgB5ZEo14FsibyGL2y4esl4/ZSPwIgY6OGUdUej0yfBYQN4Ygx5KJM63YSCvxWJzcAhJ7tuygqyAIISxADGgwyODQyMTEzNDgzMzYiDMIiqM5veVNERRQUyyqlAp4JNQ6NzjXuRyO5/opEs22zABW+UrYfe95/RTXuI/X8a+CSYMlcU47XKNdfP3mQvoS+JL2rcOJg83/u0DBEw+Gz5dhEiup+hdRVTrgch/bg1CpkxM3D9+UJvyUjGclPvY7zznSnuBGjd+gKL90WVSRgC9x8IrR1bxpc+7i8wGTNEeYKt2B8p9ym6G6b9x1FtN2NqRZJQTZCVYjQQNAH7MT4V3DD0uXTCUEx49Bi8duh6X9KHvBsTq9mOk9ZqOu3tMbYa8rBdOnuRt09SIJpUfzoAAi/gtbCkyyihELmv2+UyOn638BwRTxXAvaev0xE9s9v2Fo5TQYNDyXQEKiALC+srOo9V3TeS0sHJ/scupCHzHTSws7z4CVDAFLxVnS0Yfekb8niMOql/I4GOqIBgGdcQOL7ir0D0NPktnCccR54fU4qDWel0GI6Feypo99KActExGHfkC4V9ld9YFU3ZmPwIG5piXh/KcftG/GcDVoQd1EVdr6y6IitdiG6xRVB9QiWYWaMkvhqaQe8CDyTNSug/EHYXSHZfZKIX+jLEkcTKFVymEtpQCoUsoSiND1HdncPmQQJ1ha4AHnzi+T2c4sA2+yerjTCeZT7Em3adKKv"
+      
+    },
     "email": {
       "host": "",
       "port": "",
