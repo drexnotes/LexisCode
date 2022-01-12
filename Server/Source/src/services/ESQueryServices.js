@@ -27,8 +27,14 @@ module.exports = {
       })
       // Sign the request
       const  signer = new SignatureV4({
-        credentials: defaultProvider(),
-        region: config.elasticsearch.region,
+        credentials: {
+          // accessKeyId: config.elasticsearch.access_key,
+          // secretAccessKey: config.elasticsearch.secret,
+          accessKeyId: config.elasticsearch_temp.access_key,
+          secretAccessKey: config.elasticsearch_temp.secret,
+          
+        },
+        region: config.elasticsearch_temp.region,
         service: 'es',
         sha256: Sha256
       });
