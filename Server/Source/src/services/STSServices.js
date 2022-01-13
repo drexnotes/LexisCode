@@ -6,37 +6,29 @@ const config = require("config").get(mode);
 
 dotenv.config({ path: config.envpath });
 module.exports = {
+
+  /****Create temporary session : Inputs are accesskeyid and secretkey of IAM user */
   createSessionToken: async (createSessionTokenDto) => {
     return new Promise(async (resolve, reject) => {
-      // console.log(config);
       try {
-        // let client = new STSClient({
-        //   region: config.elasticsearch.region,
-        //   credentials: {
-        //     accessKeyId: config.elasticsearch.access_key,
-        //     secretAccessKey: config.elasticsearch.secret,
-        //   },
-        // });
+        let client = new STSClient({
+          region: config.elasticsearch.region,
+          credentials: {
+            accessKeyId: config.elasticsearch.access_key,//accesskey id of IAM user(dont use temporary key)
+            secretAccessKey: config.elasticsearch.secret,//secretkey of IAM user(dont use temporary secret)
+          },
+        });
 
-        // const command = await new GetSessionTokenCommand(createSessionTokenDto);
-        // const response = await client.send(command);
-        // const output = {
-        //   region: config.elasticsearch.region,
-        //   accessKeyId: response.Credentials.AccessKeyId,
-        //   secretAccessKey: response.Credentials.SecretAccessKey,
-        //   sessionToken: response.Credentials.SessionToken,
-        //   signatureVersion: "v4",
-        // };
+        const command = await new GetSessionTokenCommand(createSessionTokenDto);
+        let response = await client.send(command);
 
         const output = {
-          region: config.elasticsearch_temp.region,
-          accessKeyId: config.elasticsearch_temp.access_key,
-          secretAccessKey: config.elasticsearch_temp.secret,
-          sessionToken: config.elasticsearch_temp.secret_token,
-          signatureVersion: "v4",
+          accessKeyId: response.Credentials.AccessKeyId,//temporary session key
+          secretAccessKey: response.Credentials.SecretAccessKey,//temporary session secret
+          sessionToken: response.Credentials.SessionToken,//temporary session token
+          Expiration: response.Credentials.Expiration,//temporary session expiration
         };
-        //console.log("Token", response.Credentials.SecretAccessKey);
-        console.log("output--", output);
+        //console.log(response);
         resolve(output);
       } catch (e) {
         console.log("error--", e);

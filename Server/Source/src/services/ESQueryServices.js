@@ -10,10 +10,13 @@ const config = require("config").get(mode);
 dotenv.config({ path: config.envpath });
 
 module.exports = {
+  /** opensearch search fuction** */
   searchES: async (body, params, query, session) => {
+  
     return new Promise(async (resolve, reject) => {
 
-      const clientn = new NodeHttpHandler(session);
+      
+      // create request with search squer and search domain
       let request = new HttpRequest({
         body: JSON.stringify(body),
         headers: {
@@ -25,24 +28,21 @@ module.exports = {
         path: '_search'
     
       })
-      // Sign the request
+
+      // Sign the request using signature V4 : inpits are "temporary session values and region"
       const  signer = new SignatureV4({
-        credentials: {
-          // accessKeyId: config.elasticsearch.access_key,
-          // secretAccessKey: config.elasticsearch.secret,
-          accessKeyId: config.elasticsearch_temp.access_key,
-          secretAccessKey: config.elasticsearch_temp.secret,
-          
-        },
-        region: config.elasticsearch_temp.region,
+        credentials:session,// contains temporary session with( session acccessky, sessionsecret, session token)
+        region: config.elasticsearch.region,
         service: 'es',
         sha256: Sha256
       });
+
+      //create signedRequest with signature 
       let signedRequest = await signer.sign(request);
-      //console.log(signedRequest);
+  
      
 
-      // Send the request
+      // Send the request signedRequest
       var client = new NodeHttpHandler();
       var { response } =  await client.handle(signedRequest)
       //console.log(response.statusCode + ' ' + response.body.statusMessage);
@@ -52,7 +52,7 @@ module.exports = {
           responseBody += chunk;
         });
         response.body.on('end', () => {
-          //console.log('Response body: ' + responseBody);
+          console.log('Response body: ' + responseBody);
           resolve(JSON.parse(responseBody));
         });
       }, (error) => {
